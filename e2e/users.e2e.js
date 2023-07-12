@@ -39,9 +39,20 @@ describe('test for /users path', () => {
       expect(response.statusCode).toBe(400);
       expect(response.body.message).toMatch(/email/);
     });
-  });
 
-  // TODO: test with valid data
+    test('should return a new user', async () => {
+      const inputData = { email: 'pepito@mail.com', password: 'pepito123' };
+      const { statusCode, body } = await api
+        .post('/api/v1/users')
+        .send(inputData);
+      expect(statusCode).toBe(201);
+      // check DB
+      const user = await models.User.findByPk(body.id);
+      expect(user).toBeTruthy();
+      expect(user.role).toEqual('admin');
+      expect(user.email).toEqual(inputData.email);
+    });
+  });
 
   describe('PUT /users', () => {
     // test for /users
